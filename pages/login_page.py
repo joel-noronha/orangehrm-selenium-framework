@@ -1,3 +1,7 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,6 +20,7 @@ class LoginPage:
     Error_message = (By.XPATH,"//p[contains(@class, 'oxd-alert-content-text')]")
     Required_message = (By.XPATH,"//span[text()='Required']")
 
+
     def load(self):
         self.driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
 
@@ -29,3 +34,10 @@ class LoginPage:
 
     def get_required_field(self):
         return self.driver.find_elements(*self.Required_message)
+
+    def is_password_masked(self):
+        password = self.wait.until(EC.presence_of_element_located(self.Password))
+        return password.get_attribute("type") == "password"
+
+    def get_title(self):
+        return self.driver.title

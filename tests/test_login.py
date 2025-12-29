@@ -28,5 +28,15 @@ def test_empty_credentials(driver):
     print(errors)
     assert len(errors) == 2
 
+def test_password_masked(driver):
+    login_page = LoginPage(driver)
+    login_page.load()
+    assert login_page.is_password_masked()
+
+def test_page_title(driver):
+    login_page = LoginPage(driver)
+    login_page.load()
+    assert 'OrangeHRM' == login_page.get_title()
+
 
 
