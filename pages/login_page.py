@@ -1,6 +1,8 @@
 import os
 import sys
 
+from pages.dashboard_page import DashboardPage
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -28,6 +30,8 @@ class LoginPage:
         self.wait.until(EC.visibility_of_element_located(self.UserName)).send_keys(username)
         self.driver.find_element(*self.Password).send_keys(password)
         self.driver.find_element(*self.LOGIN_BUTTON).click()
+        dashboard = DashboardPage(self.driver)
+        return dashboard
 
     def error_message(self):
         return self.wait.until(EC.presence_of_element_located(self.Error_message)).text
