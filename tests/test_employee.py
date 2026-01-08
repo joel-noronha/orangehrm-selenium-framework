@@ -1,3 +1,7 @@
+import os
+
+import pytest
+
 from pages.employee_page import EmployeePage
 from pages.login_page import LoginPage
 
@@ -18,9 +22,30 @@ def test_add_new_employee(driver):
     employee_page = EmployeePage(driver)
     employee_page.click_on_pim_menu()
     employee_page.click_add_employee()
+
     empid = employee_page.get_employee_id()
     print(empid)
     employee_page.add_employee_mandatory('test123','emplast')
+    employee_page.click_save()
+    assert employee_page.is_employee_created()
+
+@pytest.mark.smoke
+def test_add_employee_full_details(driver):
+    login_page = LoginPage(driver)
+    login_page.load()
+    login_page.login("Admin", "admin123")
+
+    employee_page = EmployeePage(driver)
+    employee_page.click_on_pim_menu()
+    employee_page.click_add_employee()
+
+    employee_page.add_employee_mandatory("Joel", "Doe")
+
+    image_path = os.path.abspath("test_data/profile.jpg")
+    employee_page.upload_profile_picture(image_path)
+
+    employee_page.add_additional_details("Mid","6830")
+    employee_page.click_save()
     assert employee_page.is_employee_created()
 
 

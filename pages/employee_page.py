@@ -42,9 +42,42 @@ class EmployeePage:
         ).send_keys(first_name)
 
         self.driver.find_element(*self.last_name).send_keys(last_name)
+
+    def click_save(self):
         self.driver.find_element(*self.save_btn).click()
 
     def is_employee_created(self):
         return self.wait.until(
             EC.visibility_of_element_located(self.personal_details_header)
         ).is_displayed()
+
+    SUCCESS_TOAST_MESSAGE = (
+        By.XPATH,
+        "//div[contains(@class,'oxd-toast')]//p[contains(@class,'oxd-text--toast-message')]"
+    )
+
+    def get_success_message(self):
+        try:
+            toast = self.wait.until(
+                EC.visibility_of_element_located(self.SUCCESS_TOAST_MESSAGE)
+            )
+            return toast.text
+        except TimeoutException:
+            return None
+
+    UPLOAD_PHOTO = (By.XPATH, "//input[@type='file']")
+    middle_name = (By.CSS_SELECTOR, "input[placeholder='Middle Name']")
+    Emp_ID = (By.XPATH, "//label[text()='Employee Id']/parent::div/following-sibling::div/input")
+
+    def upload_profile_picture(self, image_path):
+        upload = self.wait.until(
+            EC.presence_of_element_located(self.UPLOAD_PHOTO)
+        )
+        upload.send_keys(image_path)
+
+    def add_additional_details(self, middle_name, emp_id):
+        self.wait.until(
+            EC.visibility_of_element_located(self.middle_name)
+        ).send_keys(middle_name)
+
+        self.driver.find_element(*self.Emp_ID).send_keys(emp_id)
