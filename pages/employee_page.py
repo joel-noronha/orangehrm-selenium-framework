@@ -68,6 +68,11 @@ class EmployeePage:
     UPLOAD_PHOTO = (By.XPATH, "//input[@type='file']")
     middle_name = (By.CSS_SELECTOR, "input[placeholder='Middle Name']")
     Emp_ID = (By.XPATH, "//label[text()='Employee Id']/parent::div/following-sibling::div/input")
+    EMP_ID_SEARCH = (By.XPATH, "//label[text()='Employee Id']/../following-sibling::div/input")
+    EMP_NAME_SEARCH = (By.XPATH, "//input[@placeholder='Type for hints...']")
+    SEARCH_BTN = (By.XPATH, "//button[.=' Search ']")
+    RESULT_ROWS = (By.XPATH, "//div[@class='oxd-table-body']//div[@role='row']")
+    NO_RECORDS = (By.XPATH, "//span[text()='No Records Found']")
 
     def upload_profile_picture(self, image_path):
         upload = self.wait.until(
@@ -81,3 +86,26 @@ class EmployeePage:
         ).send_keys(middle_name)
 
         self.driver.find_element(*self.Emp_ID).send_keys(emp_id)
+
+    def search_by_id(self, emp_id):
+        self.wait.until(
+            EC.visibility_of_element_located(self.EMP_ID_SEARCH)
+        ).send_keys(emp_id)
+        self.driver.find_element(*self.SEARCH_BTN).click()
+
+    def search_by_name(self, name):
+        self.wait.until(
+            EC.visibility_of_element_located(self.EMP_NAME_SEARCH)
+        ).send_keys(name)
+        self.driver.find_element(*self.SEARCH_BTN).click()
+
+    def is_employee_in_results(self):
+        rows = self.wait.until(
+            EC.presence_of_all_elements_located(self.RESULT_ROWS)
+        )
+        return len(rows) > 0
+
+    def is_no_records_found(self):
+        return self.wait.until(
+            EC.visibility_of_element_located(self.NO_RECORDS)
+        ).is_displayed()

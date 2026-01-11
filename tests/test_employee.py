@@ -48,5 +48,28 @@ def test_add_employee_full_details(driver):
     employee_page.click_save()
     assert employee_page.is_employee_created()
 
+def test_search_employee_by_id(driver):
+    login = LoginPage(driver)
+    login.load()
+    login.login("Admin", "admin123")
+
+    employee = EmployeePage(driver)
+    employee.click_on_pim_menu()
+
+    employee.search_by_id("6830")
+    assert employee.is_employee_in_results()
+
+
+def test_search_employee_invalid(driver):
+    login = LoginPage(driver)
+    login.load()
+    login.login("Admin", "admin123")
+
+    employee = EmployeePage(driver)
+    employee.click_on_pim_menu()
+
+    employee.search_by_id("99999")
+    assert employee.is_no_records_found()
+
 
 
