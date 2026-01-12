@@ -1,4 +1,5 @@
-from selenium.common import TimeoutException
+from selenium.common import TimeoutException, ElementClickInterceptedException
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,9 +13,16 @@ class EmployeePage:
         self.add_employee_button = (By.XPATH, "//a[text()='Add Employee']")
         self.first_name = (By.XPATH,"//input[@placeholder='First Name']")
         self.last_name = (By.NAME, "lastName")
-        self.save_btn = (By.XPATH, "//button[@type='submit']")
+        self.save_btn = (By.XPATH, "(//button[@type='submit'])[1]")
         self.employee_id = (By.XPATH,"//label[text()= 'Employee Id']/../following-sibling::div/input")
         self.personal_details_header = (By.XPATH, "//h6[text()='Personal Details']")
+        self.EDIT_FIRST_NAME = (By.CSS_SELECTOR, "input[placeholder='First Name']")
+        self.EDIT_LAST_NAME = (By.NAME, "lastName")
+        self.EDIT_SAVE_BTN = (
+    By.XPATH,
+    "//h6[text()='Personal Details']/parent::div//button[@type='submit']"
+)
+
 
     def click_on_pim_menu(self):
         self.wait.until(EC.element_to_be_clickable((self.pim_menu))).click()
@@ -109,3 +117,70 @@ class EmployeePage:
         return self.wait.until(
             EC.visibility_of_element_located(self.NO_RECORDS)
         ).is_displayed()
+
+    FIRST_RESULT_EDIT = (
+        By.XPATH,
+        "(//div[@class='oxd-table-body']//div[@role='row'])[1]//button[last()]"
+    )
+
+    def open_first_employee(self):
+        self.wait.until(
+            EC.element_to_be_clickable(self.FIRST_RESULT_EDIT)
+        ).click()
+
+    def click_edit_save(self):
+        save_btn = self.wait.until(
+            EC.presence_of_element_located(self.EDIT_SAVE_BTN)
+        )
+
+        # Scroll into view
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});",
+            save_btn
+        )
+
+        # Wait for UI to settle (overlay disappears)
+        self.wait.until(
+            lambda d: save_btn.is_displayed()
+        )
+
+        try:
+            save_btn.click()
+        except ElementClickInterceptedException:
+            # Reliable fallback
+            self.driver.execute_script(
+                "arguments[0].click();",
+                save_btn
+            )
+
+
+
+    def edit_employee_name(self, new_first, new_last):
+        first = self.wait.until(
+            EC.presence_of_element_located(self.EDIT_FIRST_NAME)
+        )
+        last = self.wait.until(
+            EC.presence_of_element_located(self.EDIT_LAST_NAME)
+        )
+
+        # 2. Wait until existing values are loaded
+        self.wait.until(lambda d: first.get_attribute("value") != "")
+        self.wait.until(lambda d: last.get_attribute("value") != "")
+
+        # 3. Proper clear (SPA-safe)
+        first.send_keys(Keys.CONTROL, "a")
+        first.send_keys(Keys.DELETE)
+        first.send_keys(new_first)
+
+        last.send_keys(Keys.CONTROL, "a")
+        last.send_keys(Keys.DELETE)
+        last.send_keys(new_last)
+
+        # 4. Save
+        self.click_edit_save()
+
+    def get_first_name_value(self):
+        return self.wait.until(
+            EC.visibility_of_element_located(self.EDIT_FIRST_NAME)
+        ).get_attribute("value")
+

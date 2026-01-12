@@ -1,5 +1,6 @@
 import os
 
+
 import pytest
 
 from pages.employee_page import EmployeePage
@@ -29,7 +30,7 @@ def test_add_new_employee(driver):
     employee_page.click_save()
     assert employee_page.is_employee_created()
 
-@pytest.mark.smoke
+
 def test_add_employee_full_details(driver):
     login_page = LoginPage(driver)
     login_page.load()
@@ -56,7 +57,7 @@ def test_search_employee_by_id(driver):
     employee = EmployeePage(driver)
     employee.click_on_pim_menu()
 
-    employee.search_by_id("6830")
+    employee.search_by_id("8705")
     assert employee.is_employee_in_results()
 
 
@@ -70,6 +71,29 @@ def test_search_employee_invalid(driver):
 
     employee.search_by_id("99999")
     assert employee.is_no_records_found()
+
+
+@pytest.mark.smoke
+def test_edit_employee_details(driver):
+    login = LoginPage(driver)
+    login.load()
+    login.login("Admin", "admin123")
+
+    employee = EmployeePage(driver)
+    employee.click_on_pim_menu()
+
+    # Assumes at least one employee exists
+    #employee.search_by_name("kljsd")
+    #assert employee.is_employee_in_results()
+
+    # Open first employee
+    employee.open_first_employee()
+
+    employee.edit_employee_name("JoelUpdated", "DoeUpdated")
+    assert employee.get_first_name_value() == "JoelUpdated"
+
+
+
 
 
 
