@@ -1,25 +1,30 @@
 import os
 
-
+from utils.json_utils import load_json
 import pytest
 
 from pages.employee_page import EmployeePage
 from pages.login_page import LoginPage
-
+data = load_json("employee.json")
 
 def test_employee_page_loads(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    dashboard = login_page.login("Admin", "admin123")
+    dashboard = login_page.login(data["login"]["username"],
+        data["login"]["password"])
     dashboard.is_dasboard_loaded()
     employee_page = EmployeePage(driver)
     employee_page.click_on_pim_menu()
     assert employee_page.is_page_loaded() == 'PIM'
 
+
+@pytest.mark.smoke
+@pytest.mark.regression
 def test_add_new_employee(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    login_page.login("Admin", "admin123")
+    login_page.login(data["login"]["username"],
+        data["login"]["password"])
     employee_page = EmployeePage(driver)
     employee_page.click_on_pim_menu()
     employee_page.click_add_employee()
@@ -30,11 +35,12 @@ def test_add_new_employee(driver):
     employee_page.click_save()
     assert employee_page.is_employee_created()
 
-
+@pytest.mark.regression
 def test_add_employee_full_details(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    login_page.login("Admin", "admin123")
+    login_page.login(data["login"]["username"],
+        data["login"]["password"])
 
     employee_page = EmployeePage(driver)
     employee_page.click_on_pim_menu()
@@ -52,7 +58,8 @@ def test_add_employee_full_details(driver):
 def test_search_employee_by_id(driver):
     login = LoginPage(driver)
     login.load()
-    login.login("Admin", "admin123")
+    login.login(data["login"]["username"],
+        data["login"]["password"])
 
     employee = EmployeePage(driver)
     employee.click_on_pim_menu()
@@ -64,7 +71,8 @@ def test_search_employee_by_id(driver):
 def test_search_employee_invalid(driver):
     login = LoginPage(driver)
     login.load()
-    login.login("Admin", "admin123")
+    login.login(data["login"]["username"],
+        data["login"]["password"])
 
     employee = EmployeePage(driver)
     employee.click_on_pim_menu()
@@ -74,23 +82,27 @@ def test_search_employee_invalid(driver):
 
 
 @pytest.mark.smoke
-def test_edit_employee_details(driver):
+def test_edit_employee_details(driver, employee_data):
     login = LoginPage(driver)
     login.load()
-    login.login("Admin", "admin123")
+    login.login(data["login"]["username"],
+        data["login"]["password"])
 
     employee = EmployeePage(driver)
     employee.click_on_pim_menu()
 
     # Assumes at least one employee exists
-    #employee.search_by_name("kljsd")
+    #employee.search_by_name(employee_data["search_name"])
     #assert employee.is_employee_in_results()
 
     # Open first employee
     employee.open_first_employee()
 
-    employee.edit_employee_name("JoelUpdated", "DoeUpdated")
-    assert employee.get_first_name_value() == "JoelUpdated"
+    employee.edit_employee_name(employee_data["first_name"],
+        employee_data["last_name"])
+    assert employee.get_first_name_value() == employee_data["first_name"]
+    success_msg = employee.get_success_message()
+    assert "Success" in success_msg
 
 
 

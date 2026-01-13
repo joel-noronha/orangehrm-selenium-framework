@@ -4,6 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
+
+
 class EmployeePage:
     def __init__(self,driver):
         self.driver = driver
@@ -22,6 +25,9 @@ class EmployeePage:
     By.XPATH,
     "//h6[text()='Personal Details']/parent::div//button[@type='submit']"
 )
+        self.SUCCESS_MESSAGE = (By.CSS_SELECTOR,".oxd-toast-content-text")
+
+
 
 
     def click_on_pim_menu(self):
@@ -59,19 +65,7 @@ class EmployeePage:
             EC.visibility_of_element_located(self.personal_details_header)
         ).is_displayed()
 
-    SUCCESS_TOAST_MESSAGE = (
-        By.XPATH,
-        "//div[contains(@class,'oxd-toast')]//p[contains(@class,'oxd-text--toast-message')]"
-    )
 
-    def get_success_message(self):
-        try:
-            toast = self.wait.until(
-                EC.visibility_of_element_located(self.SUCCESS_TOAST_MESSAGE)
-            )
-            return toast.text
-        except TimeoutException:
-            return None
 
     UPLOAD_PHOTO = (By.XPATH, "//input[@type='file']")
     middle_name = (By.CSS_SELECTOR, "input[placeholder='Middle Name']")
@@ -120,7 +114,7 @@ class EmployeePage:
 
     FIRST_RESULT_EDIT = (
         By.XPATH,
-        "(//div[@class='oxd-table-body']//div[@role='row'])[1]//button[last()]"
+        "(//div[@class='oxd-table-body']//div[@role='row'])[1]//button[1]"
     )
 
     def open_first_employee(self):
@@ -183,4 +177,10 @@ class EmployeePage:
         return self.wait.until(
             EC.visibility_of_element_located(self.EDIT_FIRST_NAME)
         ).get_attribute("value")
+
+    def get_success_message(self):
+        message = self.wait.until(
+            EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
+        )
+        return message.text
 
