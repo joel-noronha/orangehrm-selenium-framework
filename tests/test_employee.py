@@ -81,7 +81,7 @@ def test_search_employee_invalid(driver):
     assert employee.is_no_records_found()
 
 
-@pytest.mark.smoke
+@pytest.mark.regression
 def test_edit_employee_details(driver, employee_data):
     login = LoginPage(driver)
     login.load()

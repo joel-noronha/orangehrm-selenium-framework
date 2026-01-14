@@ -1,6 +1,8 @@
+import pytest
+
 from pages.login_page import LoginPage
 
-
+@pytest.mark.smoke
 def test_dashboard_loads(driver):
     login_page = LoginPage(driver)
     login_page.load()
