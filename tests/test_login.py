@@ -1,17 +1,21 @@
 from pages.login_page import LoginPage
 import pytest
+from utils.json_utils import load_json
+data = load_json("employee.json")
 
 @pytest.mark.smoke
 def test_valid_login(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    login_page.login("Admin", "admin123")
+    login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert "dashboard" in driver.current_url.lower()
 @pytest.mark.regression
 def test_invalid_login(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    login_page.login("Admin", "admin122")
+    login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert "Invalid credentials" in login_page.error_message()
 
 def test_invalid_username(driver):

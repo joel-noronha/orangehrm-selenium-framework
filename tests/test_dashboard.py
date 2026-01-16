@@ -1,28 +1,33 @@
 import pytest
-
+from utils.json_utils import load_json
 from pages.login_page import LoginPage
+data = load_json("employee.json")
 
 @pytest.mark.smoke
 def test_dashboard_loads(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    dashboard = login_page.login("Admin", "admin123")
+    dashboard = login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert dashboard.is_dasboard_loaded()
 
 def test_dashboard_url_check(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    dashboard = login_page.login("Admin", "admin123")
+    dashboard = login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert "dashboard" in dashboard.get_current_url().lower()
 
 def test_profile_dropdown_visible(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    dashboard = login_page.login("Admin", "admin123")
+    dashboard = login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert dashboard.get_dashboard_profiledropdown()
 
 def test_dashboard_sidemenu(driver):
     login_page = LoginPage(driver)
     login_page.load()
-    dashboard = login_page.login("Admin", "admin123")
+    dashboard = login_page.login(data["login"]["username"],
+        data["login"]["password"])
     assert len(dashboard.get_side_menu_items()) > 0

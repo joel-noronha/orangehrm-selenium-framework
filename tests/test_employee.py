@@ -92,8 +92,8 @@ def test_edit_employee_details(driver, employee_data):
     employee.click_on_pim_menu()
 
     # Assumes at least one employee exists
-    #employee.search_by_name(employee_data["search_name"])
-    #assert employee.is_employee_in_results()
+    employee.search_by_name(employee_data["search_name"])
+    assert employee.is_employee_in_results()
 
     # Open first employee
     employee.open_first_employee()
